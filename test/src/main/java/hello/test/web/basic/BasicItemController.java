@@ -1,13 +1,13 @@
 package hello.test.web.basic;
 
 import hello.test.domain.Item.Item;
+import hello.test.domain.Item.ItemParamDto;
 import hello.test.domain.Item.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -36,6 +36,27 @@ public class BasicItemController {
     @GetMapping("/add")
     public String addForm() {
         return "basic/addForm";
+    }
+
+    @PostMapping("/add")
+    public String addItem(Item item, RedirectAttributes redirectAttributes) {
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/basic/items/{itemId}";
+    }
+
+    @GetMapping("/{itemId}/edit")
+    public String editForm(@PathVariable Long itemId, Model model) {
+        Item item = itemRepository.findById(itemId);
+        model.addAttribute("item", item);
+        return "basic/editForm";
+    }
+
+    @PostMapping("{itemId}/edit")
+    public String edit(@PathVariable Long itemId, @ModelAttribute ItemParamDto item) {
+        itemRepository.update(itemId, item);
+        return "redirect:/basic/items/{itemId}";
     }
 
     @PostConstruct
