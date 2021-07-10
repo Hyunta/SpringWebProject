@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ItemRepository {
 
     private static final Map<Long, Item> store = new ConcurrentHashMap<>();
-    private static long sequence = 0; //static
+    private static long sequence = 0L; //static
 
     public Item save(Item item) {
         item.setId(++sequence);
