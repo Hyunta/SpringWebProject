@@ -47,7 +47,18 @@ public class BasicItemController {
     @PostMapping("/add")
     public String addItem(@Validated @ModelAttribute("item") ItemSaveForm form, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
+        //특정 필드가 아닌 복합 툴 검증
+        if (form.getPrice() != null && form.getQuantity() != null) {
+            int resultPrice = form.getPrice() * form.getQuantity();
+            if (resultPrice < 10000) {
+                bindingResult.reject("totalPriceMin", new Object[]{10000, resultPrice}, null);
+            }
+        }
 
+        if (bindingResult.hasErrors()) {
+            log.info("errors = {}", bindingResult);
+            return "basic/addForm";
+        }
 
         //성공 로직
         Item item = new Item();
